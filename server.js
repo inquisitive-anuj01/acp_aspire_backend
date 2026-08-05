@@ -94,9 +94,9 @@ app.post('/api/submit-form', async (req, res) => {
     } = req.body;
 
     // Validate required fields
-    if (!name || !email || !phone) {
+    if (!name || !email || !phone || !city) {
       return res.status(400).json({
-        error: 'Please fill all required fields: Name, Email, Phone'
+        error: 'Please fill all required fields: Name, Email, Phone, City'
       });
     }
 
@@ -109,14 +109,14 @@ app.post('/api/submit-form', async (req, res) => {
       name,
       email,
       cleanPhone,
-      city || 'Not specified',
+      city,
       details || '',
       formType,
       source,
       new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
     ]];
 
-    console.log('📝 Preparing to save to Google Sheets:', { name, email });
+    console.log('📝 Preparing to save to Google Sheets:', { name, email, city });
 
     // Append data to Google Sheet
     const sheets = google.sheets({ version: 'v4', auth });
@@ -129,7 +129,7 @@ app.post('/api/submit-form', async (req, res) => {
       requestBody: { values },
     });
 
-    console.log('✅ Data written to Google Sheets:', { name, email });
+    console.log('✅ Data written to Google Sheets:', { name, email, city });
 
     // Return success response
     res.status(200).json({
@@ -139,6 +139,7 @@ app.post('/api/submit-form', async (req, res) => {
         name,
         email,
         phone: cleanPhone,
+        city,
         formType
       }
     });
